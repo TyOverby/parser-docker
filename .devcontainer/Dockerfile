@@ -3,5 +3,6 @@ USER root
 RUN sed -i 's-/home/opam:/sbin/nologin-/home/opam:/bin/bash-' /etc/passwd
 USER opam
 
-RUN opam install dune base merlin
+RUN opam install dune base merlin ocamlformat ppx_jane
 RUN sudo apk add git neovim
+run mkdir -p ~/.cache/nvim
