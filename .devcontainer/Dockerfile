@@ -6,7 +6,7 @@ USER opam
 
 RUN opam install dune base merlin ocamlformat ppx_jane ocaml-lsp-server
 RUN sudo apk add git neovim
-
 RUN mkdir -p ~/.cache/nvim
 
-run dune build
+RUN bash -c "source ~/.profile; dune build"
+RUN bash -c "source ~/.profile; dune test"
