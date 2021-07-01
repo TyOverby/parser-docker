@@ -2,5 +2,6 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.183.0/containers/alpine
 {
 	"dockerFile": "Dockerfile",
-	"remoteUser": "opam"
+	"remoteUser": "opam",
+    "extensions": [ "ocamllabs.ocaml-platform" ]
 }
