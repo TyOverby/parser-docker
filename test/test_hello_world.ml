@@ -1,7 +1,7 @@
 open! Base 
 
 let%expect_test _ =
-  Stdio.print_endline "Hello world!";
+  Hello_world.print_hello_world ();
   [%expect{|
     Hello world!
   |}]

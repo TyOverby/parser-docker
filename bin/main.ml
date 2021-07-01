@@ -1,3 +1,3 @@
 open! Base
 
-let () = Stdio.print_endline "Hello, World!"
+let () = Hello_world.print_hello_world ()
