@@ -2,4 +2,5 @@
  (name hello_world_test)
  (inline_tests)
  (libraries hello_world)
- (preprocess (pps ppx_jane)))
+ (preprocess
+  (pps ppx_jane)))

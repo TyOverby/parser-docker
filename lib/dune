@@ -1,4 +1,9 @@
 (library
  (name hello_world)
- (libraries base)
- (preprocess (pps ppx_jane)))
+ (libraries base sedlex menhirLib)
+ (preprocess
+  (pps ppx_jane sedlex.ppx)))
+
+(menhir
+ (modules parser)
+ (flags --explain --dump))

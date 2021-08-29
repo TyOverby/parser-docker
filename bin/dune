@@ -1,4 +1,5 @@
 (executable
  (name main)
  (libraries hello_world base)
- (preprocess (pps ppx_jane)))
+ (preprocess
+  (pps ppx_jane)))
