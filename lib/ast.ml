@@ -1,47 +1,60 @@
 open! Base
 
 module Spanned = struct
-  type 'a t = {
-    span : Source_code_position.t * Source_code_position.t;
-    item : 'a;
-  } [@@deriving sexp_of]
+  let all :
+      (Caml.Obj.t * (Source_code_position.t * Source_code_position.t)) list ref
+      =
+    ref []
+
+  let register a ~span =
+    all := (Caml.Obj.repr a, span) :: !all;
+    a
+
+  let find a = List.Assoc.find !all ~equal:phys_equal (Caml.Obj.repr a)
+
+  let copy ~from ~to_ =
+    let span = find from |> Option.value_exn in
+    register to_ ~span
 end
 
-module rec Pattern : sig
-  type t = Ident of string Spanned.t [@@deriving sexp_of]
-end = struct 
-  type t = Ident of string Spanned.t [@@deriving sexp_of]
+module rec Top_level : sig
+  type t = Value of { name : string; expr : Expr.t } [@@deriving sexp_of]
+end = struct
+  type t = Value of { name : string; expr : Expr.t } [@@deriving sexp_of]
 end
+
+and Pattern : sig
+  type t = Ident of string [@@deriving sexp_of]
+end = struct
+  type t = Ident of string [@@deriving sexp_of]
+end
+
 and Expr : sig
   type t =
-    | Int_lit of int Spanned.t
-    | Ident of string Spanned.t
-    | Add of t Spanned.t * t Spanned.t
-    | Sub of t Spanned.t * t Spanned.t
-    | Mul of t Spanned.t * t Spanned.t
-    | Div of t Spanned.t * t Spanned.t
-    | Parens of t Spanned.t
-    | Neg of t Spanned.t
-    | Let of {
-        binding : Pattern.t Spanned.t;
-        rhs : t Spanned.t;
-        body : t Spanned.t;
-      } [@@deriving sexp_of]
-end = struct 
+    | Int_lit of int
+    | Ident of string
+    | Add of t * t
+    | Sub of t * t
+    | Mul of t * t
+    | Div of t * t
+    | Ignore of t * t
+    | Parens of t
+    | Neg of t
+    | Let of { binding : Pattern.t; rhs : t; body : t }
+  [@@deriving sexp_of]
+end = struct
   type t =
-    | Int_lit of int Spanned.t
-    | Ident of string Spanned.t
-    | Add of t Spanned.t * t Spanned.t
-    | Sub of t Spanned.t * t Spanned.t
-    | Mul of t Spanned.t * t Spanned.t
-    | Div of t Spanned.t * t Spanned.t
-    | Parens of t Spanned.t
-    | Neg of t Spanned.t
-    | Let of {
-        binding : Pattern.t Spanned.t;
-        rhs : t Spanned.t;
-        body : t Spanned.t;
-      } [@@deriving sexp_of]
+    | Int_lit of int
+    | Ident of string
+    | Add of t * t
+    | Sub of t * t
+    | Mul of t * t
+    | Div of t * t
+    | Ignore of t * t
+    | Parens of t
+    | Neg of t
+    | Let of { binding : Pattern.t; rhs : t; body : t }
+  [@@deriving sexp_of]
 end
 
-let spanned item ~span = { Spanned.item; span }
+let spanned item ~span = Spanned.register item ~span

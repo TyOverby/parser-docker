@@ -4,15 +4,17 @@
 %token LPAREN RPAREN
 %token SEMICOLON
 %token LET EQUAL IN
+%token DOUBLE_SEMICOLON
 %token EOF
 
 %nonassoc IN
-%nonassoc LET
+%left SEMICOLON
 %left PLUS MINUS
 %left TIMES DIV
 %nonassoc UMINUS
 
-%start <Ast.Expr.t Ast.Spanned.t list> main
+%start <Ast.Top_level.t list> main
+%type <Ast.Expr.t> expr
 
 %{
 open Ast
@@ -20,9 +22,12 @@ open Ast
 
 %%
 
-main:
-| stmt = expr SEMICOLON? EOF { [stmt] }
-| stmt = expr SEMICOLON m = main { stmt :: m}
+main: 
+| toplevel  = toplevel EOF  { [toplevel] }
+| toplevel  = toplevel rest = main { toplevel :: rest }
+
+toplevel:
+| LET name = IDENT EQUAL expr = expr DOUBLE_SEMICOLON { spanned ~span:$loc (Top_level.Value {name; expr}) }
 
 pattern: 
 | ident = IDENT { spanned ~span:$loc (Pattern.Ident (spanned ~span:$loc ident))}
@@ -40,6 +45,8 @@ expr:
     { spanned ~span:$loc (Expr.Mul (e1, e2)) }
 | e1 = expr DIV e2 = expr
     { spanned ~span:$loc (Expr.Div (e1, e2)) }
+| e1 = expr SEMICOLON e2 = expr
+    { spanned ~span:$loc (Expr.Ignore (e1, e2)) }
 | LET binding = pattern EQUAL rhs = expr IN body = expr 
     { spanned ~span:$loc (Expr.Let 
       {

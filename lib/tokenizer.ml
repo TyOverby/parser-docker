@@ -26,6 +26,7 @@ let rec token buf =
   | '/' -> Tokens.DIV
   | '(' -> Tokens.RPAREN
   | ')' -> Tokens.LPAREN
+  | ";;" -> Tokens.DOUBLE_SEMICOLON
   | ';' -> Tokens.SEMICOLON
   | identifier -> Tokens.IDENT (Sedlexing.Utf8.lexeme buf)
   | white_space -> token buf

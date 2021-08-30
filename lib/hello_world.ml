@@ -11,8 +11,15 @@ let ast_of_string string =
   revised_parser next
 
 let print_hello_world () =
-  let ast = ast_of_string "let a = 5 in 5 * 10" in
-  ast 
-  |> [%sexp_of: Ast.Expr.t Ast.Spanned.t list] 
-  |> Sexp.to_string_hum
+  let ast =
+    ast_of_string
+      {|
+  let a = 
+    let b = 5 * 10 in 
+    b + 2
+  ;;
+  let b = a;;
+|}
+  in
+  ast |> [%sexp_of: Ast.Top_level.t list] |> Sexp.to_string_hum
   |> Stdio.print_endline
